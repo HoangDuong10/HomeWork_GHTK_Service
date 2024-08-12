@@ -214,6 +214,16 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnCo
 //    }
 
     private fun sendNotificationMedia() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            )
+            channel.setSound(null, null)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
         val song = listSongPlaying[songPosition]
         val bitmap = song.image?.let { BitmapFactory.decodeResource(resources, it) }
 //        val uri = Uri.parse("android.resource://" + packageName + "/" + song.url)
@@ -224,10 +234,6 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnCo
             .setContentText(song.artist)
             .setSmallIcon(R.drawable.ic_small_push_notification)
             .setLargeIcon(bitmap)
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                    .bigText("Title: ${song.title}\nArtist: ${song.artist}\nAdditional Information Here")
-            )
             .setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
                     .setShowActionsInCompactView(0, 1, 2,3 /* #1: pause button */)
